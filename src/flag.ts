@@ -7,7 +7,7 @@ export type BooleanFlag<N extends string> = Flag<boolean, N>;
 
 export function makeNumberFlag<N extends string>(
   name: N,
-  alias?: N
+  alias?: string
 ): NumberFlag<N> {
   return (args: Args) => {
     let v = args[name];
@@ -18,17 +18,24 @@ export function makeNumberFlag<N extends string>(
   };
 }
 
-export function makeStringFlag<N extends string>(name: N): StringFlag<N> {
+export function makeStringFlag<N extends string>(name: N, alias?: string): StringFlag<N> {
   return (args: Args) => {
     const v = args[name];
+    if (!v && alias) {
+      return <any>{ [name]: args[alias] };
+    }
     return <any>{ [name]: v };
   };
 }
 
-export function makeBooleanFlag<N extends string>(name: N): BooleanFlag<N> {
+export function makeBooleanFlag<N extends string>(name: N, alias?: string): BooleanFlag<N> {
   return (args: Args) => {
     if (args[name]) {
       return <any>{ [name]: true };
+    }
+    const v = args[name];
+    if (!v && alias) {
+      return <any>{ [name]: args[alias] };
     }
     return <any>{ [name]: false };
   };
