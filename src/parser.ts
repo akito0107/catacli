@@ -1,0 +1,1 @@
+export type Args = { [key in string]: string };
