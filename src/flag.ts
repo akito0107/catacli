@@ -5,9 +5,15 @@ export type NumberFlag<N extends string> = Flag<number, N>;
 export type StringFlag<N extends string> = Flag<string, N>;
 export type BooleanFlag<N extends string> = Flag<boolean, N>;
 
-export function makeNumberFlag<N extends string>(name: N): NumberFlag<N> {
+export function makeNumberFlag<N extends string>(
+  name: N,
+  alias?: N
+): NumberFlag<N> {
   return (args: Args) => {
-    const v = args[name];
+    let v = args[name];
+    if (!v && alias) {
+      v = args[alias];
+    }
     return <any>{ [name]: parseInt(v, 10) };
   };
 }

@@ -12,7 +12,7 @@ test("parse string", () => {
 });
 
 test("compose", () => {
-  const flag1 = makeNumberFlag("arg1");
+  const flag1 = makeNumberFlag("arg1", "a");
   const flag2 = makeStringFlag("arg2");
 
   const composed = compose(
