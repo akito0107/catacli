@@ -1,5 +1,10 @@
 import { strict as assert } from "assert";
-import { makeNumberFlag, makeStringFlag, compose } from "../flag";
+import {
+  makeNumberFlag,
+  makeStringFlag,
+  compose,
+  makeBooleanFlag
+} from "../flag";
 
 test("parse number", () => {
   const flag = makeNumberFlag("arg1");
@@ -12,17 +17,36 @@ test("parse string", () => {
 });
 
 test("compose", () => {
-  const flag1 = makeNumberFlag("arg1", "a");
+  const flag1 = makeNumberFlag("arg1", { alias: "a" });
   const flag2 = makeStringFlag("arg2");
 
   const composed = compose(
     flag1,
     flag2
   );
-  const result = composed({ arg1: "123", arg2: "hoge" });
+  const result = composed({ a: "123", arg2: "hoge" });
 
   assert.deepEqual(result, {
     arg1: 123,
     arg2: "hoge"
+  });
+});
+
+test("compose3", () => {
+  const flag1 = makeNumberFlag("arg1");
+  const flag2 = makeStringFlag("arg2");
+  const flag3 = makeBooleanFlag("arg3");
+
+  const parse = compose(
+    flag1,
+    flag2,
+    flag3
+  );
+  const res = parse({ arg1: "123", arg2: "hoge", arg3: "true" });
+
+  assert.deepEqual(res, {
+    arg1: 123,
+    arg2: "hoge",
+    arg3: true
   });
 });
