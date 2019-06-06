@@ -76,15 +76,15 @@ type UnionToIntersection<U> = (U extends any
   ? I
   : never;
 
-export function compose<
+export function composeFlag<
   T extends Array<(args: Args) => { [key: string]: any }>
 >(...src: T): (args: Args) => UnionToIntersection<TupleTypes<T>> {
   return <any>src.splice(1).reduce((acc, cur) => {
-    return compose2(acc, cur);
+    return _compose(acc, cur);
   }, src[0]);
 }
 
-function compose2<T1, T1Name extends string, T2, T2Name extends string>(
+function _compose<T1, T1Name extends string, T2, T2Name extends string>(
   t1: Flag<T1, T1Name>,
   t2: Flag<T2, T2Name>
 ): Flag<{ [key in T1Name]: T1 } & { [key in T2Name]: T2 }, T1Name | T2Name> {

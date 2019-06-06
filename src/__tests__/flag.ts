@@ -2,7 +2,7 @@ import { strict as assert } from "assert";
 import {
   makeNumberFlag,
   makeStringFlag,
-  compose,
+  composeFlag,
   makeBooleanFlag
 } from "../flag";
 
@@ -16,11 +16,11 @@ test("parse string", () => {
   assert.deepEqual(flag({ arg1: "123", arg2: "hoge" }), { arg1: "123" });
 });
 
-test("compose", () => {
+test("composeFlag", () => {
   const flag1 = makeNumberFlag("arg1", { alias: "a" });
   const flag2 = makeStringFlag("arg2");
 
-  const composed = compose(
+  const composed = composeFlag(
     flag1,
     flag2
   );
@@ -37,7 +37,7 @@ test("compose3", () => {
   const flag2 = makeStringFlag("arg2");
   const flag3 = makeBooleanFlag("arg3");
 
-  const parse = compose(
+  const parse = composeFlag(
     flag1,
     flag2,
     flag3
