@@ -20,6 +20,11 @@ export function makeNumberFlag<N extends string>(
     if (!v && option.alias) {
       v = args[option.alias];
     }
+
+    if (!v) {
+      return <any>{ [name]: option.default };
+    }
+
     return <any>{ [name]: parseInt(v, 10) };
   };
 }
@@ -32,6 +37,9 @@ export function makeStringFlag<N extends string>(
     const v = args[name];
     if (!v && option.alias) {
       return <any>{ [name]: args[option.alias] };
+    }
+    if (!v) {
+      return <any>{ [name]: option.default };
     }
     return <any>{ [name]: v };
   };
@@ -48,6 +56,9 @@ export function makeBooleanFlag<N extends string>(
     const v = args[name];
     if (!v && option.alias) {
       return <any>{ [name]: args[option.alias] };
+    }
+    if (v == null && option.default) {
+      return <any>{ [name]: true };
     }
     return <any>{ [name]: false };
   };
