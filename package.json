@@ -1,13 +1,13 @@
 {
-  "name": "maroon-func",
+  "name": "marron-glace",
   "version": "0.0.1",
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
   "license": "Apache-2.0",
-  "repository": "akito0107/agreed-typed",
+  "repository": "akito0107/marron-glace",
   "author": {
     "name": "Akito Ito",
-    "email": "akito_ito@r.recruit.co.jp"
+    "email": "akito0107@gmail.com"
   },
   "scripts": {
     "test": "jest",
