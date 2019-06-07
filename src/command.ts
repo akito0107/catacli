@@ -7,7 +7,7 @@ export type CommandSpec<T> = {
 };
 
 export type Runnable = (args: Args) => void;
-export type Command = { name: string; run: Runnable };
+export type Command = { name: string; run: Runnable; subCommands?: Command[] };
 
 export function makeCommand<T>(spec: CommandSpec<T>): Command {
   return {

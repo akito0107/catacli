@@ -1,6 +1,8 @@
 import { Args } from "./parser";
 
-export type Flag<T, N extends string> = (args: Args) => { [key in N]: T };
+export type Flag<T, N extends string> = (
+  args: Args
+) => { [key in N]: { value: T; option: FlagOption<T> } };
 export type NumberFlag<N extends string> = Flag<number, N>;
 export type StringFlag<N extends string> = Flag<string, N>;
 export type BooleanFlag<N extends string> = Flag<boolean, N>;
@@ -22,10 +24,15 @@ export function makeNumberFlag<N extends string>(
     }
 
     if (!v) {
-      return <any>{ [name]: option.default };
+      return <any>{
+        [name]: {
+          value: option.default,
+          option
+        }
+      };
     }
 
-    return <any>{ [name]: parseInt(v, 10) };
+    return <any>{ [name]: { value: parseInt(v, 10), option } };
   };
 }
 
@@ -36,12 +43,12 @@ export function makeStringFlag<N extends string>(
   return (args: Args) => {
     const v = args[name];
     if (!v && option.alias) {
-      return <any>{ [name]: args[option.alias] };
+      return <any>{ [name]: { value: args[option.alias], option } };
     }
     if (!v) {
-      return <any>{ [name]: option.default };
+      return <any>{ [name]: { value: option.default, option } };
     }
-    return <any>{ [name]: v };
+    return <any>{ [name]: { value: v, option } };
   };
 }
 
@@ -51,16 +58,16 @@ export function makeBooleanFlag<N extends string>(
 ): BooleanFlag<N> {
   return (args: Args) => {
     if (args[name]) {
-      return <any>{ [name]: true };
+      return <any>{ [name]: { value: true, option } };
     }
     const v = args[name];
     if (!v && option.alias) {
-      return <any>{ [name]: args[option.alias] };
+      return <any>{ [name]: { value: args[option.alias], option } };
     }
     if (v == null && option.default) {
-      return <any>{ [name]: true };
+      return <any>{ [name]: { value: true, option } };
     }
-    return <any>{ [name]: false };
+    return <any>{ [name]: { value: false, option } };
   };
 }
 

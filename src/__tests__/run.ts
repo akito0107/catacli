@@ -11,8 +11,8 @@ test("single command", done => {
     flag,
     handler: opts => {
       assert.deepEqual(opts, {
-        arg1: "test",
-        arg2: 123
+        arg1: { value: "test", option: {} },
+        arg2: { value: 123, option: {} }
       });
       done();
     }
@@ -43,9 +43,9 @@ test("sub command", done => {
     flag: flag2,
     handler: opts => {
       assert.deepEqual(opts, {
-        arg1: "test",
-        arg2: 123,
-        arg4: "arg4"
+        arg1: { value: "test", option: {} },
+        arg2: { value: 123, option: {} },
+        arg4: { value: "arg4", option: {} }
       });
       done();
     }
