@@ -3,7 +3,7 @@ import { makeCommand } from "../command";
 import { run } from "../run";
 import { composeFlag, makeNumberFlag, makeStringFlag } from "../flag";
 
-test("makeCommand", done => {
+test("single command", done => {
   const flag = composeFlag(makeStringFlag("arg1"), makeNumberFlag("arg2"));
 
   const command = makeCommand({
@@ -18,5 +18,42 @@ test("makeCommand", done => {
     }
   });
 
-  run("test", ["--arg1", "test", "--arg2", "123"], command);
+  run(["--arg1", "test", "--arg2", "123"], command);
+});
+
+test("sub command", done => {
+  const globalFlag = composeFlag(
+    makeStringFlag("arg1"),
+    makeNumberFlag("arg2")
+  );
+  const flag1 = composeFlag(globalFlag, makeStringFlag("arg3"));
+  const flag2 = composeFlag(globalFlag, makeStringFlag("arg4"));
+
+  const command1 = makeCommand({
+    name: "command1",
+    flag: flag1,
+    handler: opts => {
+      assert.fail("must not be called");
+      done(opts);
+    }
+  });
+
+  const command2 = makeCommand({
+    name: "command2",
+    flag: flag2,
+    handler: opts => {
+      assert.deepEqual(opts, {
+        arg1: "test",
+        arg2: 123,
+        arg4: "arg4"
+      });
+      done();
+    }
+  });
+
+  run(
+    ["--arg1", "test", "--arg2", "123", "command2", "--arg4", "arg4"],
+    command1,
+    command2
+  );
 });

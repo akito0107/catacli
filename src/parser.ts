@@ -1,60 +1,17 @@
+import { Runnable } from "./command";
+
 export type Args = { [key in string]: string };
 
-export function makeParser(args: string[]) {
-  return new Parser(args);
-}
-
-class Parser {
-  private readonly args: string[];
-  private idx: number;
-
-  constructor(args: string[]) {
-    this.args = args;
-    this.idx = 0;
-  }
-  peek() {
-    if (this.args.length <= this.idx + 1) {
-      return null;
-    }
-    return this.args[this.idx + 1];
-  }
-  next() {
-    if (this.args.length <= this.idx + 1) {
-      return null;
-    }
-    this.idx += 1;
-    return this.args[this.idx];
-  }
-  consumeFlag() {
-    const tok = this.peek();
-    if (!tok) {
-      return null;
-    }
-    if (maybeFlag(tok)) {
-      this.next();
-      return tok.slice(2);
-    }
-    if (maybeAlias(tok)) {
-      this.next();
-      return tok.slice(1);
-    }
-    return null;
-  }
-  consumeValue() {
-    const tok = this.peek();
-    if (!tok) {
-      return null;
-    }
-    if (maybeFlagLike(tok)) {
-      return null;
-    }
-    return this.next();
-  }
-}
-
-export function parse(args: string[]): Args {
+export function parse(
+  args: string[],
+  runnableMap: { [key in string]: Runnable }
+): { opts: Args; runnable: Runnable } {
   const result = {};
-  const maybeCommand = [];
+
+  const checkSubcommand = Object.keys(runnableMap).length !== 1;
+  let runnable = checkSubcommand
+    ? null
+    : runnableMap[Object.keys(runnableMap)[0]];
 
   for (let i = 0; i < args.length; i++) {
     if (maybeFlag(args[i])) {
@@ -73,12 +30,21 @@ export function parse(args: string[]): Args {
         continue;
       }
       result[args[i].slice(1)] = "true";
-    } else {
-      maybeCommand.push(args[i]);
+    } else if (checkSubcommand) {
+      const subcommand = runnableMap[args[i]];
+      if (!subcommand || i === 0) {
+        continue;
+      }
+      runnable = subcommand;
+      if (maybeFlag(args[i - 1])) {
+        result[args[i - 1].slice(2)] = "true";
+      } else if (maybeAlias(args[i - 1])) {
+        result[args[i - 1].slice(1)] = "true";
+      }
     }
   }
 
-  return result;
+  return { opts: result, runnable };
 }
 
 function maybeFlagLike(str: string) {
