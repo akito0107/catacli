@@ -3,8 +3,7 @@ import {
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag,
-  run
+  composeFlag
 } from "../main";
 
 const booleanFlag = makeBooleanFlag("arg1");
@@ -28,4 +27,4 @@ const command = makeCommand({
   }
 });
 
-run(process.argv.splice(2), command);
+command(process.argv.splice(2));

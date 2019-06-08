@@ -33,7 +33,7 @@ export function makeNumberFlag<N extends string>(
 ): NumberFlag<N> {
   return (args: string[]) => {
     const idx = findIndex(args, name, option.alias || "");
-    if (idx < 0) {
+    if (idx < 0 || idx + 1 >= args.length) {
       return <any>{
         [name]: {
           value: option.default,
@@ -41,7 +41,7 @@ export function makeNumberFlag<N extends string>(
         }
       };
     }
-    let v = args[idx + 1];
+    const v = args[idx + 1];
 
     return <any>{
       [name]: { value: parseInt(v, 10), option, position: [idx, idx + 1] }
@@ -55,7 +55,7 @@ export function makeStringFlag<N extends string>(
 ): StringFlag<N> {
   return (args: string[]) => {
     const idx = findIndex(args, name, option.alias);
-    if (idx < 0) {
+    if (idx < 0 || idx + 1 >= args.length) {
       return <any>{
         [name]: {
           value: option.default,
@@ -64,7 +64,9 @@ export function makeStringFlag<N extends string>(
       };
     }
     const v = args[idx + 1];
-    return <any>{ [name]: { value: v, option, position: [idx, idx + 1] } };
+    return <any>{
+      [name]: { value: v, option, position: v ? [idx, idx + 1] : undefined }
+    };
   };
 }
 
