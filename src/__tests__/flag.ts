@@ -8,15 +8,15 @@ import {
 
 test("parse number", () => {
   const flag = makeNumberFlag("arg1");
-  assert.deepEqual(flag({ arg1: "123", arg2: "hoge" }), {
-    arg1: { value: 123, option: {} }
+  assert.deepEqual(flag(["--arg1", "123", "--arg2", "hoge"]), {
+    arg1: { value: 123, option: {}, position: [0, 1] }
   });
 });
 
 test("parse string", () => {
   const flag = makeStringFlag("arg1");
-  assert.deepEqual(flag({ arg1: "123", arg2: "hoge" }), {
-    arg1: { value: "123", option: {} }
+  assert.deepEqual(flag(["--arg1", "123", "--arg2", "hoge"]), {
+    arg1: { value: "123", option: {}, position: [0, 1] }
   });
 });
 
@@ -25,18 +25,20 @@ test("composeFlag", () => {
   const flag2 = makeStringFlag("arg2");
 
   const composed = composeFlag(flag1, flag2);
-  const result = composed({ a: "123", arg2: "hoge" });
+  const result = composed(["-a", "123", "--arg2", "hoge"]);
 
   assert.deepEqual(result, {
     arg1: {
       value: 123,
       option: {
-        alias: "a",
-      }
+        alias: "a"
+      },
+      position: [0, 1]
     },
     arg2: {
       value: "hoge",
-      option: {}
+      option: {},
+      position: [2, 3]
     }
   });
 });
@@ -47,20 +49,23 @@ test("compose3", () => {
   const flag3 = makeBooleanFlag("arg3");
 
   const parse = composeFlag(flag1, flag2, flag3);
-  const res = parse({ arg1: "123", arg2: "hoge", arg3: "true" });
+  const res = parse(["--arg1", "123", "--arg2", "hoge", "--arg3"]);
 
   assert.deepEqual(res, {
     arg1: {
       value: 123,
-      option: {}
+      option: {},
+      position: [0, 1]
     },
     arg2: {
       value: "hoge",
-      option: {}
+      option: {},
+      position: [2, 3]
     },
     arg3: {
       value: true,
-      option: {}
+      option: {},
+      position: [4]
     }
   });
 });

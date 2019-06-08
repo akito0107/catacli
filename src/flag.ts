@@ -1,8 +1,12 @@
-import { Args } from "./parser";
-
 export type Flag<T, N extends string> = (
-  args: Args
-) => { [key in N]: { value: T; option: FlagOption<T> } };
+  args: string[]
+) => {
+  [key in N]: {
+    value?: T;
+    option: FlagOption<T>;
+    position?: number[];
+  }
+};
 export type NumberFlag<N extends string> = Flag<number, N>;
 export type StringFlag<N extends string> = Flag<string, N>;
 export type BooleanFlag<N extends string> = Flag<boolean, N>;
@@ -13,17 +17,63 @@ export type FlagOption<T> = {
   usage?: string;
 };
 
+function findIndex(args: string[], ...names: string[]): number {
+  return args.findIndex(a => {
+    const result = names.findIndex(n => {
+      return a === `--${n}` || a === `-${n}`;
+    });
+    return result > -1;
+  });
+}
+
 export function makeNumberFlag<N extends string>(
   name: N,
   option: FlagOption<number> = {}
 ): NumberFlag<N> {
-  return (args: Args) => {
-    let v = args[name];
-    if (!v && option.alias) {
-      v = args[option.alias];
+  return (args: string[]) => {
+    const idx = findIndex(args, name, option.alias || "");
+    if (idx < 0) {
+      return <any>{
+        [name]: {
+          value: option.default,
+          option
+        }
+      };
     }
+    let v = args[idx + 1];
 
-    if (!v) {
+    return <any>{
+      [name]: { value: parseInt(v, 10), option, position: [idx, idx + 1] }
+    };
+  };
+}
+
+export function makeStringFlag<N extends string>(
+  name: N,
+  option: FlagOption<string> = {}
+): StringFlag<N> {
+  return (args: string[]) => {
+    const idx = findIndex(args, name, option.alias);
+    if (idx < 0) {
+      return <any>{
+        [name]: {
+          value: option.default,
+          option
+        }
+      };
+    }
+    const v = args[idx + 1];
+    return <any>{ [name]: { value: v, option, position: [idx, idx + 1] } };
+  };
+}
+
+export function makeBooleanFlag<N extends string>(
+  name: N,
+  option: FlagOption<boolean> = {}
+): BooleanFlag<N> {
+  return (args: string[]) => {
+    const idx = findIndex(args, name, option.alias);
+    if (idx < 0) {
       return <any>{
         [name]: {
           value: option.default,
@@ -32,47 +82,12 @@ export function makeNumberFlag<N extends string>(
       };
     }
 
-    return <any>{ [name]: { value: parseInt(v, 10), option } };
-  };
-}
-
-export function makeStringFlag<N extends string>(
-  name: N,
-  option: FlagOption<string> = {}
-): StringFlag<N> {
-  return (args: Args) => {
-    const v = args[name];
-    if (!v && option.alias) {
-      return <any>{ [name]: { value: args[option.alias], option } };
-    }
-    if (!v) {
-      return <any>{ [name]: { value: option.default, option } };
-    }
-    return <any>{ [name]: { value: v, option } };
-  };
-}
-
-export function makeBooleanFlag<N extends string>(
-  name: N,
-  option: FlagOption<boolean> = {}
-): BooleanFlag<N> {
-  return (args: Args) => {
-    if (args[name]) {
-      return <any>{ [name]: { value: true, option } };
-    }
-    const v = args[name];
-    if (!v && option.alias) {
-      return <any>{ [name]: { value: args[option.alias], option } };
-    }
-    if (v == null && option.default) {
-      return <any>{ [name]: { value: true, option } };
-    }
-    return <any>{ [name]: { value: false, option } };
+    return <any>{ [name]: { value: true, option, position: [idx] } };
   };
 }
 
 type TupleTypes<T> = { [P in keyof T]: T[P] } extends {
-  [key: number]: (args: Args) => infer V;
+  [key: number]: (args: string[]) => infer V;
 }
   ? V
   : never;
@@ -84,8 +99,8 @@ type UnionToIntersection<U> = (U extends any
   : never;
 
 export function composeFlag<
-  T extends Array<(args: Args) => { [key: string]: any }>
->(...src: T): (args: Args) => UnionToIntersection<TupleTypes<T>> {
+  T extends Array<(args: string[]) => { [key: string]: any }>
+>(...src: T): (args: string[]) => UnionToIntersection<TupleTypes<T>> {
   return <any>src.splice(1).reduce((acc, cur) => {
     return _compose(acc, cur);
   }, src[0]);
@@ -95,7 +110,7 @@ function _compose<T1, T1Name extends string, T2, T2Name extends string>(
   t1: Flag<T1, T1Name>,
   t2: Flag<T2, T2Name>
 ): Flag<{ [key in T1Name]: T1 } & { [key in T2Name]: T2 }, T1Name | T2Name> {
-  return (args: Args) => {
+  return (args: string[]) => {
     const t1v = t1(args);
     const t2v = t2(args);
     return <any>{

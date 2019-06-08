@@ -1,21 +1,18 @@
 import { Args } from "./parser";
 
-export type CommandSpec<T> = {
+export type CommandSpec<T extends (params: Args) => any> = {
   name?: string;
   flag?: T;
-  handler?: T extends (args: Args) => infer V ? (v: V) => any : never;
-  subCommands?: Command[];
+  handler?: T extends (params: Args) => infer V ? (v: V) => any : never;
 };
 
-export type Runnable = (args: Args) => void;
-export type Command = { name: string; run: Runnable; subCommands?: Command[] };
+export type Command = (args: string[]) => any;
 
-export function makeCommand<T>(spec: CommandSpec<T>): Command {
-  return {
-    name: spec.name,
-    run: (args: Args) => {
-      const opts = (<any>spec.flag)(args);
-      spec.handler(opts);
-    }
+export function makeCommand<T extends (args: Args) => any>(
+  spec: CommandSpec<T>
+): Command {
+  return (args: string[]) => {
+    const opts = spec.flag(args);
+    return spec.handler(opts);
   };
 }
