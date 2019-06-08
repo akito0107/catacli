@@ -1,11 +1,36 @@
 import { makeCommand } from "../command";
-import { composeFlag, makeStringFlag } from "../flag";
+import { strict as assert } from "assert";
 
-const globalFlag = composeFlag(makeStringFlag("global1"));
+import { composeFlag, makeNumberFlag, makeStringFlag } from "../flag";
 
-// command(process.argv.splice(2))
+test("make command", done => {
+  const globalFlag = composeFlag(
+    makeStringFlag("arg1"),
+    makeNumberFlag("arg2", {
+      alias: "a2"
+    })
+  );
+  const command = makeCommand({
+    flag: globalFlag,
+    handler: (opts, args) => {
+      assert.deepEqual(opts, {
+        arg1: {
+          value: "test",
+          option: {},
+          position: [0, 1]
+        },
+        arg2: {
+          value: 123,
+          option: {
+            alias: "a2"
+          },
+          position: [2, 3]
+        }
+      });
+      assert.deepEqual(args, ["--arg1", "test", "-a2", "123"]);
+      done();
+    }
+  });
 
-const command = makeCommand({
-  name: "test",
-  flag: globalFlag,
+  command(["--arg1", "test", "-a2", "123"]);
 });

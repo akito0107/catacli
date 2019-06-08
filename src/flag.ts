@@ -1,12 +1,13 @@
-export type Flag<T, N extends string> = (
-  args: string[]
-) => {
+export type Flag<T, N extends string> = (args: string[]) => ParseResult<T, N>;
+
+export type ParseResult<T, N extends string> = {
   [key in N]: {
     value?: T;
     option: FlagOption<T>;
     position?: number[];
   }
 };
+
 export type NumberFlag<N extends string> = Flag<number, N>;
 export type StringFlag<N extends string> = Flag<string, N>;
 export type BooleanFlag<N extends string> = Flag<boolean, N>;
