@@ -18,7 +18,8 @@ const defaultHelpFlag = makeBooleanFlag("help", {
 });
 
 export function makeCommand<T extends (args: string[]) => any>(
-  spec: CommandSpec<T>
+  spec: CommandSpec<T>,
+  showHelp = defaultHelp
 ): Command {
   return (args: string[]) => {
     const parser = composeFlag(defaultHelpFlag, spec.flag);
@@ -58,7 +59,7 @@ const optionsString = opts => {
   }, "OPTIONS:\n");
 };
 
-function showHelp(spec, opts) {
+function defaultHelp(spec, opts) {
   const helpstr = helpString(spec) + optionsString(opts);
   process.stdout.write(helpstr);
 }
