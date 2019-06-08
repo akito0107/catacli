@@ -3,7 +3,8 @@ import { Args } from "./parser";
 export type CommandSpec<T> = {
   name?: string;
   flag?: T;
-  handler: T extends (args: Args) => infer V ? (v: V) => any : never;
+  handler?: T extends (args: Args) => infer V ? (v: V) => any : never;
+  subCommands?: Command[];
 };
 
 export type Runnable = (args: Args) => void;
