@@ -11,6 +11,7 @@ test("make command", done => {
     })
   );
   const command = makeCommand({
+    name: "test",
     flag: globalFlag,
     handler: (opts, args) => {
       assert.deepEqual(opts, {
@@ -25,6 +26,12 @@ test("make command", done => {
             alias: "a2"
           },
           position: [2, 3]
+        },
+        help: {
+          option: {
+            usage: "show help"
+          },
+          value: undefined
         }
       });
       assert.deepEqual(args, ["--arg1", "test", "-a2", "123"]);
