@@ -1,26 +1,43 @@
-import { composeFlag, makeBooleanFlag } from "./flag";
+import {
+  composeFlag,
+  makeBooleanFlag,
+  TupleTypes,
+  UnionToIntersection
+} from "./flag";
 
-export type CommandSpec<T extends (args: string[]) => any> = {
+export type CommandSpec<
+  F extends (args: string[]) => any,
+  P extends (args: string[]) => any
+> = {
   name: string;
   description?: string;
   version?: string;
   usage?: string;
-  flag?: T;
-  handler?: T extends (args: string[]) => infer V
-    ? (v: V, args?: string[]) => any
+  flag?: F;
+  potisionalArguments?: P;
+  handler?: F extends (args: string[]) => infer V
+    ? P extends (args: string[]) => infer U
+      ? (v: V, rawArgs?: string[]) => any
+      : never
     : never;
 };
 
 export type Command = (args: string[]) => any;
 
+export function makePositionalArguments<
+  T extends Array<(args: string[]) => { [key: string]: any }>
+>(...args: T): (args: string[]) => UnionToIntersection<TupleTypes<T>> {
+  return <any>{};
+}
+
 const defaultHelpFlag = makeBooleanFlag("help", {
   usage: "show help"
 });
 
-export function makeCommand<T extends (args: string[]) => any>(
-  spec: CommandSpec<T>,
-  showHelp = defaultHelp
-): Command {
+export function makeCommand<
+  T extends (args: string[]) => any,
+  P extends (args: string[]) => any
+>(spec: CommandSpec<T, P>, showHelp = defaultHelp): Command {
   return (args: string[]) => {
     const parser = composeFlag(defaultHelpFlag, spec.flag);
     const opts = parser(args);
@@ -33,7 +50,7 @@ export function makeCommand<T extends (args: string[]) => any>(
   };
 }
 
-const helpString = (spec: CommandSpec<any>) => `
+const helpString = (spec: CommandSpec<any, any>) => `
 NAME:
    ${spec.name} - ${spec.description || ""}
 

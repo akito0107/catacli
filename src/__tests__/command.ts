@@ -1,7 +1,8 @@
-import { makeCommand } from "../command";
+import { makeCommand, makePositionalArguments } from "../command";
 import { strict as assert } from "assert";
 
 import { composeFlag, makeNumberFlag, makeStringFlag } from "../flag";
+import { openSync } from "fs";
 
 test("make command", done => {
   const globalFlag = composeFlag(
@@ -13,6 +14,10 @@ test("make command", done => {
   const command = makeCommand({
     name: "test",
     flag: globalFlag,
+    potisionalArguments: makePositionalArguments(
+      makeStringFlag("pos1"),
+      makeStringFlag("pos2")
+    ),
     handler: (opts, args) => {
       assert.deepEqual(opts, {
         arg1: {
