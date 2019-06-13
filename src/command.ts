@@ -3,19 +3,19 @@ import { composeFlag, makeBooleanFlag } from "./flag";
 export type CommandSpec<
   F extends (args: string[]) => any,
   P extends (args: string[]) => any
-> = {
-  name: string;
-  description?: string;
-  version?: string;
-  usage?: string;
-  flag?: F;
-  potisionalArguments?: P;
-  handler?: F extends (args: string[]) => infer V
+  > = {
+    name: string;
+    description?: string;
+    version?: string;
+    usage?: string;
+    flag?: F;
+    potisionalArguments?: P;
+    handler?: F extends (args: string[]) => infer V
     ? P extends (args: string[]) => infer U
-      ? (args: U, flags: V, rawArgs?: string[]) => any
-      : never
+    ? (args: U, flags: V, rawArgs?: string[]) => any
+    : never
     : never;
-};
+  };
 
 export type Command = (args: string[]) => any;
 
@@ -84,15 +84,18 @@ const optionsString = opts => {
 };
 
 const argumentsString = args => {
+  console.log(args)
   const sortedArgs = Object.keys(args)
     .map(a => {
-      return args[a];
+      return { [a]: args[a] };
     })
     .sort((a, b) => {
       const ak = Object.keys(a)[0];
       const bk = Object.keys(b)[0];
       return a[ak].postion - b[bk].position;
     });
+
+  console.log(sortedArgs);
   return sortedArgs.reduce((acc, arg) => {
     const key = Object.keys(arg)[0];
     acc += `\t ${key} \t ${arg[key].usage}\n`;

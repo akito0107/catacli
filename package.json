@@ -51,5 +51,8 @@
       "/node_modules/",
       "helper.ts"
     ]
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.12"
   }
 }
