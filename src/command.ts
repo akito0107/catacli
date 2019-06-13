@@ -1,5 +1,6 @@
 import { composeFlag, makeBooleanFlag } from "./flag";
 import { defaultHelp } from "./help";
+import { makeStringArgument } from "./args";
 
 export type CommandSpec<
   N extends string,
@@ -14,7 +15,7 @@ export type CommandSpec<
   potisionalArguments?: P;
   handler?: F extends (args: string[]) => infer V
     ? P extends (args: string[]) => infer U
-      ? (args: U, flags: V, rawArgs?: string[]) => any
+      ? (args: U, flags: V, helpFn?: Function, rawArgs?: string[]) => any
       : never
     : never;
 };
@@ -24,6 +25,11 @@ export type Command = (args: string[]) => any;
 const defaultHelpFlag = makeBooleanFlag("help", {
   usage: "show help"
 });
+
+export const subCommandNameArgument = (...names: string[]) =>
+  makeStringArgument("COMMAND_NAME", {
+    usage: `[${names.join(" | ")}]`
+  });
 
 export function makeCommand<
   N extends string,
@@ -51,12 +57,18 @@ export function makeCommand<
       ? spec.potisionalArguments(rest)
       : {};
 
-    if (flags.help && flags.help.value) {
-      showHelp(spec, positionalArguments, flags);
+    const nameIdx = positionalArguments["COMMAND_NAME"]
+      ? args.indexOf(positionalArguments["COMMAND_NAME"].value)
+      : Number.MAX_SAFE_INTEGER;
+
+    const helpFn = () => showHelp(spec, positionalArguments, flags, args);
+
+    if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
+      helpFn();
       return;
     }
 
-    return spec.handler(positionalArguments, flags, args);
+    return spec.handler(positionalArguments, flags, helpFn, args);
   };
 }
 
@@ -69,29 +81,24 @@ export function makeSubCommandHandler(
       [c.name]: c.command
     };
   }, {});
-
-  return (_, flags, rawArgs) => {
-    const used = Object.keys(flags)
-      .map(k => {
-        return flags[k].position;
-      })
-      .filter(o => o)
-      .flat();
-
-    const rest = rawArgs.filter((_, idx) => {
-      return used.indexOf(idx) === -1;
-    });
-    if (rest.length === 0) {
-      // TODO subcommand help
+  const handler = (args, flags, helpFn, rawArgs) => {
+    const commandName = args["COMMAND_NAME"];
+    if (!commandName) {
+      helpFn();
       return;
     }
-    const command = commandMap[rest[0]];
+    const command = commandMap[commandName.value];
     if (!command) {
-      // TODO subcommand help
-      throw new Error(rest);
+      helpFn();
+      return;
     }
 
-    rawArgs.splice(rawArgs.indexOf(rest[0]), 1);
+    if (flags.help && flags.help.value) {
+    }
+
+    rawArgs.splice(commandName.position, 1);
     command(rawArgs);
   };
+
+  return handler;
 }

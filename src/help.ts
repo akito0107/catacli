@@ -44,7 +44,7 @@ const argumentsString = args => {
   }, "ARGUMENTS:\n");
 };
 
-export function defaultHelp(spec, args, flags) {
+export function defaultHelp(spec, args, flags, _) {
   let helpstr = helpString(spec);
   if (args) {
     helpstr += argumentsString(args) + "\n";

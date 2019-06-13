@@ -8,7 +8,7 @@ import {
   composeFlag
 } from "../main";
 import { makeStringArgument, makePositionalArguments } from "../args";
-import { makeSubCommandHandler } from "../command";
+import { makeSubCommandHandler, subCommandNameArgument } from "../command";
 
 const booleanFlag = makeBooleanFlag("opts1", {
   usage: "boolean example"
@@ -50,12 +50,17 @@ const subCommand2 = makeCommand({
   }
 });
 
+const commandNames = makePositionalArguments(
+  subCommandNameArgument("sub1", "sub2")
+);
+
 const command = makeCommand({
   name: "example",
   description: "marron-glace is typescript-friendly commander tool",
   version: "0.0.1",
-  usage: "simple [OPTIONS] [SUB COMMAND] [SUB COMMAND OPTIONS]",
+  usage: "simple [OPTIONS] [COMMAND_NAME] [SUB COMMAND OPTIONS]",
   flag: flags,
+  potisionalArguments: commandNames,
   handler: makeSubCommandHandler(
     { name: "sub1", command: subCommand1 },
     { name: "sub2", command: subCommand2 }
