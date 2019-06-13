@@ -11,7 +11,7 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "skipLibCheck": true,
     "baseUrl": ".",
     "lib": ["es6", "es2016", "es2017", "es2018", "es2019"],
