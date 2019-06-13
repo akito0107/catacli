@@ -49,8 +49,18 @@ export function makePositionalArguments<
   return (args: string[]) => {
     return <any>argParsers.reduce((memo, a, idx) => {
       const res = a(args[idx]);
+      const v = Object.keys(res).reduce((m, k) => {
+        return {
+          ...m,
+          ...res,
+          [k]: {
+            ...res[k],
+            position: idx
+          }
+        };
+      }, {});
       return {
-        ...res,
+        ...v,
         ...memo
       };
     }, {});

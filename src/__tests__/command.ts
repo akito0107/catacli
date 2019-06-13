@@ -42,10 +42,12 @@ test("make command", done => {
       });
       assert.deepEqual(args, {
         pos1: {
-          value: "aaa"
+          value: "aaa",
+          position: 0
         },
         pos2: {
-          value: "bbb"
+          value: "bbb",
+          position: 1
         }
       });
       assert.deepEqual(rawArgs, ["--arg1", "test", "-a2", "123", "aaa", "bbb"]);

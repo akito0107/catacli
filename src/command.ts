@@ -32,10 +32,6 @@ export function makeCommand<
       ? composeFlag(defaultHelpFlag, spec.flag)
       : spec.flag;
     const opts = parser(args);
-    if (opts.help && opts.help.value) {
-      showHelp(spec, opts);
-      return;
-    }
 
     const used = Object.keys(opts)
       .map(k => {
@@ -51,6 +47,11 @@ export function makeCommand<
     const positionalArguments = spec.potisionalArguments
       ? spec.potisionalArguments(rest)
       : {};
+
+    if (opts.help && opts.help.value) {
+      showHelp(spec, positionalArguments, opts);
+      return;
+    }
 
     return spec.handler(positionalArguments, opts, args);
   };
@@ -82,7 +83,30 @@ const optionsString = opts => {
   }, "OPTIONS:\n");
 };
 
-function defaultHelp(spec, opts) {
-  const helpstr = helpString(spec) + optionsString(opts);
+const argumentsString = args => {
+  const sortedArgs = Object.keys(args)
+    .map(a => {
+      return args[a];
+    })
+    .sort((a, b) => {
+      const ak = Object.keys(a)[0];
+      const bk = Object.keys(b)[0];
+      return a[ak].postion - b[bk].position;
+    });
+  return sortedArgs.reduce((acc, arg) => {
+    const key = Object.keys(arg)[0];
+    acc += `\t ${key} \t ${arg[key].usage}\n`;
+    return acc;
+  }, "ARGUMENTS:\n");
+};
+
+function defaultHelp(spec, args, flags) {
+  let helpstr = helpString(spec);
+  if (args) {
+    helpstr += argumentsString(args);
+  }
+  if (flags) {
+    helpstr += optionsString(flags);
+  }
   process.stdout.write(helpstr);
 }
