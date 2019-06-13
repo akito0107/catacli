@@ -90,7 +90,7 @@ export function makeBooleanFlag<N extends string>(
 }
 
 export type TupleTypes<T> = { [P in keyof T]: T[P] } extends {
-  [key: number]: (args: string[]) => infer V;
+  [key: number]: (args: any) => infer V;
 }
   ? V
   : never;

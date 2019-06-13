@@ -1,8 +1,8 @@
-import { makeCommand, makePositionalArguments } from "../command";
+import { makeCommand } from "../command";
+import { makePositionalArguments, makeStringArgument } from "../args";
 import { strict as assert } from "assert";
 
 import { composeFlag, makeNumberFlag, makeStringFlag } from "../flag";
-import { openSync } from "fs";
 
 test("make command", done => {
   const globalFlag = composeFlag(
@@ -11,15 +11,16 @@ test("make command", done => {
       alias: "a2"
     })
   );
+  const positionalArgs = makePositionalArguments(
+    makeStringArgument("pos1"),
+    makeStringArgument("pos2")
+  );
   const command = makeCommand({
     name: "test",
     flag: globalFlag,
-    potisionalArguments: makePositionalArguments(
-      makeStringFlag("pos1"),
-      makeStringFlag("pos2")
-    ),
-    handler: (opts, args) => {
-      assert.deepEqual(opts, {
+    potisionalArguments: positionalArgs,
+    handler: (args, flags, rawArgs) => {
+      assert.deepEqual(flags, {
         arg1: {
           value: "test",
           option: {},
@@ -39,10 +40,18 @@ test("make command", done => {
           value: undefined
         }
       });
-      assert.deepEqual(args, ["--arg1", "test", "-a2", "123"]);
+      assert.deepEqual(args, {
+        pos1: {
+          value: "aaa"
+        },
+        pos2: {
+          value: "bbb"
+        }
+      });
+      assert.deepEqual(rawArgs, ["--arg1", "test", "-a2", "123", "aaa", "bbb"]);
       done();
     }
   });
 
-  command(["--arg1", "test", "-a2", "123"]);
+  command(["--arg1", "test", "-a2", "123", "aaa", "bbb"]);
 });

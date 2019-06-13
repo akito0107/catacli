@@ -1,9 +1,4 @@
-import {
-  composeFlag,
-  makeBooleanFlag,
-  TupleTypes,
-  UnionToIntersection
-} from "./flag";
+import { composeFlag, makeBooleanFlag } from "./flag";
 
 export type CommandSpec<
   F extends (args: string[]) => any,
@@ -17,18 +12,12 @@ export type CommandSpec<
   potisionalArguments?: P;
   handler?: F extends (args: string[]) => infer V
     ? P extends (args: string[]) => infer U
-      ? (v: V, rawArgs?: string[]) => any
+      ? (args: U, flags: V, rawArgs?: string[]) => any
       : never
     : never;
 };
 
 export type Command = (args: string[]) => any;
-
-export function makePositionalArguments<
-  T extends Array<(args: string[]) => { [key: string]: any }>
->(...args: T): (args: string[]) => UnionToIntersection<TupleTypes<T>> {
-  return <any>{};
-}
 
 const defaultHelpFlag = makeBooleanFlag("help", {
   usage: "show help"
@@ -39,14 +28,31 @@ export function makeCommand<
   P extends (args: string[]) => any
 >(spec: CommandSpec<T, P>, showHelp = defaultHelp): Command {
   return (args: string[]) => {
-    const parser = composeFlag(defaultHelpFlag, spec.flag);
+    const parser = showHelp
+      ? composeFlag(defaultHelpFlag, spec.flag)
+      : spec.flag;
     const opts = parser(args);
-    if ((<any>opts).help.value) {
+    if (opts.help && opts.help.value) {
       showHelp(spec, opts);
       return;
     }
 
-    return spec.handler(opts, args);
+    const used = Object.keys(opts)
+      .map(k => {
+        return opts[k].position;
+      })
+      .filter(o => o)
+      .flat();
+
+    const rest = args.filter((_, idx) => {
+      return used.indexOf(idx) === -1;
+    });
+
+    const positionalArguments = spec.potisionalArguments
+      ? spec.potisionalArguments(rest)
+      : {};
+
+    return spec.handler(positionalArguments, opts, args);
   };
 }
 
