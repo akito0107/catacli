@@ -42,6 +42,10 @@ const argumentsString = args => {
       return a[ak].postion - b[bk].position;
     });
 
+  if (sortedArgs.length === 0) {
+    return "";
+  }
+
   return sortedArgs.reduce((acc, arg) => {
     const key = Object.keys(arg)[0];
     acc += `\t ${key} \t ${arg[key].usage || ""}\n`;

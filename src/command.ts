@@ -61,11 +61,10 @@ export function makeCommand<
       .flat();
 
     const rest = args.filter((_, idx) => {
-      return (
-        used.indexOf(idx) === -1 &&
-        parentSpec &&
-        idx >= parentSpec.currentPosition
-      );
+      if (parentSpec) {
+        return used.indexOf(idx) === -1 && idx >= parentSpec.currentPosition;
+      }
+      return used.indexOf(idx) === -1;
     });
 
     const positionalArguments = spec.positionalArguments
