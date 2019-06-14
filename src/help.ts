@@ -1,8 +1,11 @@
 import { CommandSpec } from "./command";
+import { Opts } from "./types";
 
-const helpString = (spec: CommandSpec<string, any, any>) => `
+const headerString = (spec: CommandSpec<string, any, any>, parentSpec) => {
+  const nameString = parentSpec ? `${parentSpec.spec.name} ${spec.name}` : spec.name
+  return `
 NAME:
-   ${spec.name} - ${spec.description || ""}
+   ${nameString} - ${spec.description || ""}
 
 USAGE:
    ${spec.usage || ""}
@@ -11,8 +14,10 @@ VERSION:
   ${spec.version || ""}
   
 `;
+};
 
-const optionsString = opts => {
+const flagsString = (opts, isSub = false) => {
+  const initString = isSub ? "SUB OPTIONS:\n" : "OPTIONS:\n";
   return Object.keys(opts).reduce((acc, k) => {
     const aliasStr = opts[k].option.alias ? `, -${opts[k].option.alias}` : "";
     const defaultStr =
@@ -23,7 +28,7 @@ const optionsString = opts => {
     acc += `\t--${k}${aliasStr}  \t ${opts[k].option.usage ||
       ""}${defaultStr}\n`;
     return acc;
-  }, "OPTIONS:\n");
+  }, initString);
 };
 
 const argumentsString = args => {
@@ -44,16 +49,67 @@ const argumentsString = args => {
   }, "ARGUMENTS:\n");
 };
 
-export function defaultHelp(spec, args, flags, message) {
-  let helpstr = helpString(spec);
+export type HelpFunction = (
+  spec: CommandSpec<any, any, any>,
+  args: Opts<any>,
+  flags: Opts<any>,
+  message?: string,
+  parentSpec?: {
+    currentPosition?: number;
+    spec?: CommandSpec<string, any, any>;
+  }
+) => string;
+
+export const defaultHelp: HelpFunction = (
+  spec,
+  args,
+  flags,
+  message,
+  parentSpec
+) => {
+  let helpstr = headerString(spec, parentSpec);
   if (args) {
     helpstr += argumentsString(args) + "\n";
   }
-  if (flags) {
-    helpstr += optionsString(flags);
+
+  if (parentSpec && flags) {
+    const parentFlags = Object.keys(parentSpec.spec.flag([]));
+
+    const partitionedFlags = Object.keys(flags).reduce(
+      (m, c) => {
+        if (parentFlags.includes(c)) {
+          m.parent = {
+            [c]: {
+              ...flags[c]
+            },
+            ...m.parent
+          };
+        } else {
+          m.sub = {
+            [c]: {
+              ...flags[c]
+            },
+            ...m.sub
+          };
+        }
+
+        return m;
+      },
+      {
+        parent: {},
+        sub: {}
+      }
+    );
+    helpstr += flagsString(partitionedFlags.parent);
+    helpstr += "\n";
+    helpstr += flagsString(partitionedFlags.sub, true);
+  } else if (flags) {
+    helpstr += flagsString(flags);
   }
   if (message !== "") {
     process.stdout.write(message + "\n");
   }
   process.stdout.write(helpstr);
-}
+
+  return helpstr;
+};

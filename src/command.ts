@@ -15,7 +15,12 @@ export type CommandSpec<
   positionalArguments?: P;
   handler?: F extends (args: string[]) => infer V
     ? P extends (args: string[]) => infer U
-      ? (args: U, flags: V, helpFn?: Function, rawArgs?: string[]) => any
+      ? (
+          args: U,
+          flags: V,
+          helpFn?: Function,
+          metaInfo?: { spec?: CommandSpec<N, F, P>; rawArgs?: string[] }
+        ) => any
       : never
     : never;
 };
@@ -23,21 +28,8 @@ export type CommandSpec<
 export type Command = (
   args: string[],
   parentOpts?: {
-    currentPosition: number;
-    args?: {
-      [key in string]: {
-        value: any;
-        option: any;
-        position: number;
-      }
-    };
-    flags?: {
-      [key in string]: {
-        value: any;
-        option: any;
-        position: number[];
-      }
-    };
+    currentPosition?: number;
+    spec?: CommandSpec<any, any, any>;
   }
 ) => any;
 
@@ -55,12 +47,7 @@ export function makeCommand<
   T extends (args: string[]) => any,
   P extends (args: string[]) => any
 >(spec: CommandSpec<N, T, P>, showHelp = defaultHelp): Command {
-  return (
-    args: string[],
-    parentOpts = {
-      currentPosition: 0
-    }
-  ) => {
+  return (args: string[], parentSpec) => {
     const parser = showHelp
       ? composeFlag(defaultHelpFlag, spec.flag)
       : spec.flag;
@@ -74,7 +61,11 @@ export function makeCommand<
       .flat();
 
     const rest = args.filter((_, idx) => {
-      return used.indexOf(idx) === -1 && idx > parentOpts.currentPosition;
+      return (
+        used.indexOf(idx) === -1 &&
+        parentSpec &&
+        idx >= parentSpec.currentPosition
+      );
     });
 
     const positionalArguments = spec.positionalArguments
@@ -100,14 +91,17 @@ export function makeCommand<
       : Number.MAX_SAFE_INTEGER;
 
     const helpFn = (message = "") =>
-      showHelp(spec, argumentsWithPosition, flags, message);
+      showHelp(spec, argumentsWithPosition, flags, message, parentSpec);
 
     if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
       helpFn();
       return;
     }
 
-    return spec.handler(argumentsWithPosition, flags, helpFn, args);
+    return spec.handler(argumentsWithPosition, flags, helpFn, {
+      spec,
+      rawArgs: args
+    });
   };
 }
 
@@ -120,7 +114,7 @@ export function makeSubCommandHandler(
       [c.name]: c.command
     };
   }, {});
-  const handler = (args, flags, helpFn, rawArgs) => {
+  const handler = (args, _, helpFn, { spec, rawArgs }) => {
     const subCommand = args["COMMAND_NAME"];
     if (!subCommand) {
       helpFn();
@@ -134,8 +128,7 @@ export function makeSubCommandHandler(
 
     command(rawArgs, {
       currentPosition: subCommand.position,
-      args,
-      flags
+      spec
     });
   };
 
