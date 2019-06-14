@@ -8,7 +8,7 @@ import {
   composeFlag
 } from "../main";
 import { makeStringArgument, makePositionalArguments } from "../args";
-import { makeSubCommandHandler, subCommandNameArgument } from "../command";
+import { makeSubCommandHandler, makeSubCommandNameArgument } from "../command";
 
 const booleanFlag = makeBooleanFlag("opts1", {
   usage: "boolean example"
@@ -51,7 +51,7 @@ const subCommand2 = makeCommand({
 });
 
 const commandNames = makePositionalArguments(
-  subCommandNameArgument("sub1", "sub2")
+  makeSubCommandNameArgument("sub1", "sub2")
 );
 
 const command = makeCommand({

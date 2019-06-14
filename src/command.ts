@@ -37,7 +37,7 @@ const defaultHelpFlag = makeBooleanFlag("help", {
   usage: "show help"
 });
 
-export const subCommandNameArgument = (...names: string[]) =>
+export const makeSubCommandNameArgument = (...names: string[]) =>
   makeStringArgument("COMMAND_NAME", {
     usage: `[${names.join(" | ")}]`
   });
@@ -60,44 +60,35 @@ export function makeCommand<
       .filter(o => o)
       .flat();
 
-    const rest = args.filter((_, idx) => {
+    const rest = args.map((a, idx) => {
       if (parentSpec) {
-        return used.indexOf(idx) === -1 && idx >= parentSpec.currentPosition;
+        if (used.indexOf(idx) === -1 && idx > parentSpec.currentPosition) {
+          return a;
+        }
+      } else {
+        if (used.indexOf(idx) === -1) {
+          return a;
+        }
       }
-      return used.indexOf(idx) === -1;
     });
 
     const positionalArguments = spec.positionalArguments
       ? spec.positionalArguments(rest)
       : {};
 
-    const argumentsWithPosition = Object.keys(positionalArguments).reduce(
-      (m, k) => {
-        const position = args.indexOf(positionalArguments[k].value);
-        return {
-          [k]: {
-            ...positionalArguments[k],
-            position
-          },
-          ...m
-        };
-      },
-      {}
-    );
-
     const nameIdx = positionalArguments["COMMAND_NAME"]
-      ? argumentsWithPosition["COMMAND_NAME"].position
+      ? positionalArguments["COMMAND_NAME"].position
       : Number.MAX_SAFE_INTEGER;
 
     const helpFn = (message = "") =>
-      showHelp(spec, argumentsWithPosition, flags, message, parentSpec);
+      showHelp(spec, positionalArguments, flags, message, parentSpec);
 
     if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
       helpFn();
       return;
     }
 
-    return spec.handler(argumentsWithPosition, flags, helpFn, {
+    return spec.handler(positionalArguments, flags, helpFn, {
       spec,
       rawArgs: args
     });

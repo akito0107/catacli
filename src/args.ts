@@ -47,9 +47,14 @@ export function makeNumberArgument<N extends string>(
 export function makePositionalArguments<
   T extends Array<(args: string) => { [key: string]: any }>
 >(...argParsers: T): (args: string[]) => UnionToIntersection<TupleTypes<T>> {
-  return (args: string[]) => {
-    return <any>argParsers.reduce((memo, a, idx) => {
-      const res = a(args[idx]);
+  return (args: Array<string | undefined>) => {
+    const parseResult = <any>args.reduce((m, arg, idx) => {
+      if (!arg || argParsers.length === 0) {
+        return m;
+      }
+      const parser = argParsers[0];
+      argParsers.shift();
+      const res = parser(arg);
       const v = Object.keys(res).reduce((m, k) => {
         return {
           ...m,
@@ -62,8 +67,10 @@ export function makePositionalArguments<
       }, {});
       return {
         ...v,
-        ...memo
+        ...m
       };
     }, {});
+
+    return parseResult;
   };
 }

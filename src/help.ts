@@ -2,7 +2,9 @@ import { CommandSpec } from "./command";
 import { Opts } from "./types";
 
 const headerString = (spec: CommandSpec<string, any, any>, parentSpec) => {
-  const nameString = parentSpec ? `${parentSpec.spec.name} ${spec.name}` : spec.name
+  const nameString = parentSpec
+    ? `${parentSpec.spec.name} ${spec.name}`
+    : spec.name;
   return `
 NAME:
    ${nameString} - ${spec.description || ""}
