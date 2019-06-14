@@ -5,10 +5,12 @@ import {
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag
+  composeFlag,
+  makeStringArgument,
+  makePositionalArguments,
+  makeSubCommandHandler,
+  makeSubCommandNameArgument
 } from "../main";
-import { makeStringArgument, makePositionalArguments } from "../args";
-import { makeSubCommandHandler, makeSubCommandNameArgument } from "../command";
 
 const booleanFlag = makeBooleanFlag("opts1", {
   usage: "boolean example"
@@ -30,12 +32,14 @@ const args = makePositionalArguments(stringArg);
 
 const subCommand1 = makeCommand({
   name: "sub1",
-  description: "marron-glace subcommand example",
+  description: "marron-glace subcommand example (sub1)",
+  version: "0.0.1",
+  usage: "example [OPTIONS] sub1 [SUB COMMAND OPTIONS]",
   flag: sub1Flag,
   positionalArguments: args,
   handler: (args, flags) => {
-    console.log(args.arg1);
-    console.log(flags.subflag1);
+    console.log(args);
+    console.log(flags);
   }
 });
 
@@ -43,7 +47,9 @@ const sub2Flag = composeFlag(flags, makeStringFlag("subflag2"));
 
 const subCommand2 = makeCommand({
   name: "sub2",
-  description: "marron-glace subcommand example",
+  description: "marron-glace subcommand example (sub2)",
+  version: "0.0.1",
+  usage: "example [OPTIONS] sub2 [SUB COMMAND OPTIONS]",
   flag: sub2Flag,
   handler: (_, flags) => {
     console.log(flags.subflag2);
