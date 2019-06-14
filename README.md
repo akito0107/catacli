@@ -49,10 +49,10 @@ const command = makeCommand({
   positionalArguments: args,
   handler: (args, opts) => {
     /* YOUR COMMAND LOGIC IS HERE */
-    console.log("positionalArgs: ", args.arg1); // ok and inferred as string type
-    console.log("flag opts1: ", opts.opts1); // ok and inferred as boolean type
-    console.log("flag opts2: ", opts.opts2); // ok and inferred as number type
-    console.log("flag opts3: ", opts.opts3); // ok and inferred as string type
+    console.log("positionalArgs: ", args.arg1.value); // ok and inferred as string type
+    console.log("flag opts1: ", opts.opts1.value); // ok and inferred as boolean type
+    console.log("flag opts2: ", opts.opts2.value); // ok and inferred as number type
+    console.log("flag opts3: ", opts.opts3.value); // ok and inferred as string type
     // opts.arg4; // ng compile error
   }
 });
