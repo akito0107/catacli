@@ -67,18 +67,10 @@ $ ts-node main.ts --opts1 --opts2 123 --opts3 test args
 
 and got these outputs.
 ```$xslt
-positionalArgs:  { value: 'args', position: [ 5 ] }
-flag opts1:  { value: true, option: { usage: 'boolean example' }, position: [ 0 ] }
-flag opts2:  {
-  value: 123,
-  option: { default: 1, usage: 'number example' },
-  position: [ 1, 2 ]
-}
-flag opts3:  {
-  value: 'test',
-  option: { alias: 'a', usage: 'string example' },
-  position: [ 3, 4 ]
-}
+positionalArgs:  args
+flag opts1:  true
+flag opts2:  123
+flag opts3:  test
 ```
 
 #### Short-hand flag
@@ -86,18 +78,10 @@ flag opts3:  {
 
 ```$xslt
 % ts-node main.ts --opts1 --opts2 123 -a test args
-positionalArgs:  { value: 'args', position: [ 5 ] }
-flag opts1:  { value: true, option: { usage: 'boolean example' }, position: [ 0 ] }
-flag opts2:  {
-  value: 123,
-  option: { default: 1, usage: 'number example' },
-  position: [ 1, 2 ]
-}
-flag opts3:  {
-  value: 'test',
-  option: { alias: 'a', usage: 'string example' },
-  position: [ 3, 4 ]
-}
+positionalArgs:  args
+flag opts1:  true
+flag opts2:  123
+flag opts3:  test
 ```
 
 #### with Help
@@ -166,8 +150,11 @@ const subCommand1 = makeCommand({
   flag: sub1Flag,
   positionalArguments: args,
   handler: (args, flags) => {
-    console.log(args.arg1);
-    console.log(flags.subflag1);
+    console.log("arg1: ", args.arg1.value);
+    console.log("opts1: ", flags.opts1.value);
+    console.log("opts2: ", flags.opts2.value);
+    console.log("opts3: ", flags.opts3.value);
+    console.log("subflag1: ", flags.subflag1.value); // inffered as a string type
   }
 });
 
@@ -180,7 +167,7 @@ const subCommand2 = makeCommand({
   usage: "example [OPTIONS] sub2 [SUB COMMAND OPTIONS]",
   flag: sub2Flag,
   handler: (_, flags) => {
-    console.log(flags.subflag2);
+    console.log("subflag2: ", flags.subflag2.value);
   }
 });
 
@@ -209,26 +196,11 @@ command(process.argv.splice(2));
 running with [ts-node](https://github.com/TypeStrong/ts-node)
 ```
 $ ts-node main.ts  --opts1 --opts2 123 --opts3 test  sub1  --subflag1 test sub-positional-args
-{ arg1: { value: 'sub-positional-args', position: [ 8 ] } }
-{
-  help: { value: undefined, option: { usage: 'show help' } },
-  opts1: {
-    value: true,
-    option: { usage: 'boolean example' },
-    position: [ 0 ]
-  },
-  opts2: {
-    value: 123,
-    option: { default: 1, usage: 'number example' },
-    position: [ 1, 2 ]
-  },
-  opts3: {
-    value: 'test',
-    option: { alias: 'a', usage: 'string example' },
-    position: [ 3, 4 ]
-  },
-  subflag1: { value: 'test', option: {}, position: [ 6, 7 ] }
-}
+arg1:  sub-positional-args
+opts1:  true
+opts2:  123
+opts3:  test
+subflag1:  test
 ```
 
 and also shows rich help texts with `--help`.

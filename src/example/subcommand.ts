@@ -38,8 +38,11 @@ const subCommand1 = makeCommand({
   flag: sub1Flag,
   positionalArguments: args,
   handler: (args, flags) => {
-    console.log(args);
-    console.log(flags);
+    console.log("arg1: ", args.arg1.value);
+    console.log("opts1: ", flags.opts1.value);
+    console.log("opts2: ", flags.opts2.value);
+    console.log("opts3: ", flags.opts3.value);
+    console.log("subflag1: ", flags.subflag1.value);
   }
 });
 
@@ -52,7 +55,7 @@ const subCommand2 = makeCommand({
   usage: "example [OPTIONS] sub2 [SUB COMMAND OPTIONS]",
   flag: sub2Flag,
   handler: (_, flags) => {
-    console.log(flags.subflag2);
+    console.log("subflag2: ", flags.subflag2.value);
   }
 });
 
