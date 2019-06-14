@@ -71,17 +71,25 @@ export function makeCommand<
         }
       }
     });
+    const helpFn = (message = "") =>
+      showHelp(spec, positionalArguments, flags, message, parentSpec);
 
     const positionalArguments = spec.positionalArguments
       ? spec.positionalArguments(rest)
       : {};
 
+    const isUnknownArgs = Object.keys(positionalArguments).some(k => {
+      return !positionalArguments[k].value;
+    });
+
+    if (isUnknownArgs) {
+      helpFn();
+      return;
+    }
+
     const nameIdx = positionalArguments["COMMAND_NAME"]
       ? positionalArguments["COMMAND_NAME"].position
       : Number.MAX_SAFE_INTEGER;
-
-    const helpFn = (message = "") =>
-      showHelp(spec, positionalArguments, flags, message, parentSpec);
 
     if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
       helpFn();
