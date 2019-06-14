@@ -18,8 +18,8 @@ test("make command", done => {
   const command = makeCommand({
     name: "test",
     flag: globalFlag,
-    potisionalArguments: positionalArgs,
-    handler: (args, flags, rawArgs) => {
+    positionalArguments: positionalArgs,
+    handler: (args, flags) => {
       assert.deepEqual(flags, {
         arg1: {
           value: "test",
@@ -43,14 +43,13 @@ test("make command", done => {
       assert.deepEqual(args, {
         pos1: {
           value: "aaa",
-          position: 0
+          position: 4
         },
         pos2: {
           value: "bbb",
-          position: 1
+          position: 5
         }
       });
-      assert.deepEqual(rawArgs, ["--arg1", "test", "-a2", "123", "aaa", "bbb"]);
       done();
     }
   });

@@ -32,7 +32,7 @@ const command = makeCommand({
   version: "0.0.1",
   usage: "simple [OPTIONS] arg1",
   flag: flags,
-  potisionalArguments: args,
+  positionalArguments: args,
   handler: (args, opts) => {
     console.log(args.arg1); // ok and inferred as string type
     console.log(opts.opts1); // ok and inferred as boolean type

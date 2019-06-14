@@ -44,13 +44,16 @@ const argumentsString = args => {
   }, "ARGUMENTS:\n");
 };
 
-export function defaultHelp(spec, args, flags, _) {
+export function defaultHelp(spec, args, flags, message) {
   let helpstr = helpString(spec);
   if (args) {
     helpstr += argumentsString(args) + "\n";
   }
   if (flags) {
     helpstr += optionsString(flags);
+  }
+  if (message !== "") {
+    process.stdout.write(message + "\n");
   }
   process.stdout.write(helpstr);
 }

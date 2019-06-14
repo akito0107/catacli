@@ -8,6 +8,7 @@ type NumberArgument<N extends string> = Argument<N, number>;
 
 export type ArgumentOption = {
   usage?: string;
+  position?: number;
 };
 
 export function makeStringArgument<N extends string>(

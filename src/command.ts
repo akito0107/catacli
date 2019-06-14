@@ -12,7 +12,7 @@ export type CommandSpec<
   version?: string;
   usage?: string;
   flag?: F;
-  potisionalArguments?: P;
+  positionalArguments?: P;
   handler?: F extends (args: string[]) => infer V
     ? P extends (args: string[]) => infer U
       ? (args: U, flags: V, helpFn?: Function, rawArgs?: string[]) => any
@@ -20,7 +20,26 @@ export type CommandSpec<
     : never;
 };
 
-export type Command = (args: string[]) => any;
+export type Command = (
+  args: string[],
+  parentOpts?: {
+    currentPosition: number;
+    args?: {
+      [key in string]: {
+        value: any;
+        option: any;
+        position: number;
+      }
+    };
+    flags?: {
+      [key in string]: {
+        value: any;
+        option: any;
+        position: number[];
+      }
+    };
+  }
+) => any;
 
 const defaultHelpFlag = makeBooleanFlag("help", {
   usage: "show help"
@@ -36,7 +55,12 @@ export function makeCommand<
   T extends (args: string[]) => any,
   P extends (args: string[]) => any
 >(spec: CommandSpec<N, T, P>, showHelp = defaultHelp): Command {
-  return (args: string[]) => {
+  return (
+    args: string[],
+    parentOpts = {
+      currentPosition: 0
+    }
+  ) => {
     const parser = showHelp
       ? composeFlag(defaultHelpFlag, spec.flag)
       : spec.flag;
@@ -50,25 +74,40 @@ export function makeCommand<
       .flat();
 
     const rest = args.filter((_, idx) => {
-      return used.indexOf(idx) === -1;
+      return used.indexOf(idx) === -1 && idx > parentOpts.currentPosition;
     });
 
-    const positionalArguments = spec.potisionalArguments
-      ? spec.potisionalArguments(rest)
+    const positionalArguments = spec.positionalArguments
+      ? spec.positionalArguments(rest)
       : {};
 
+    const argumentsWithPosition = Object.keys(positionalArguments).reduce(
+      (m, k) => {
+        const position = args.indexOf(positionalArguments[k].value);
+        return {
+          [k]: {
+            ...positionalArguments[k],
+            position
+          },
+          ...m
+        };
+      },
+      {}
+    );
+
     const nameIdx = positionalArguments["COMMAND_NAME"]
-      ? args.indexOf(positionalArguments["COMMAND_NAME"].value)
+      ? argumentsWithPosition["COMMAND_NAME"].position
       : Number.MAX_SAFE_INTEGER;
 
-    const helpFn = () => showHelp(spec, positionalArguments, flags, args);
+    const helpFn = (message = "") =>
+      showHelp(spec, argumentsWithPosition, flags, message);
 
     if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
       helpFn();
       return;
     }
 
-    return spec.handler(positionalArguments, flags, helpFn, args);
+    return spec.handler(argumentsWithPosition, flags, helpFn, args);
   };
 }
 
@@ -82,22 +121,22 @@ export function makeSubCommandHandler(
     };
   }, {});
   const handler = (args, flags, helpFn, rawArgs) => {
-    const commandName = args["COMMAND_NAME"];
-    if (!commandName) {
+    const subCommand = args["COMMAND_NAME"];
+    if (!subCommand) {
       helpFn();
       return;
     }
-    const command = commandMap[commandName.value];
+    const command = commandMap[subCommand.value];
     if (!command) {
       helpFn();
       return;
     }
 
-    if (flags.help && flags.help.value) {
-    }
-
-    rawArgs.splice(commandName.position, 1);
-    command(rawArgs);
+    command(rawArgs, {
+      currentPosition: subCommand.position,
+      args,
+      flags
+    });
   };
 
   return handler;

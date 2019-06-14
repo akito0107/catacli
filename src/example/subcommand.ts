@@ -32,7 +32,7 @@ const subCommand1 = makeCommand({
   name: "sub1",
   description: "marron-glace subcommand example",
   flag: sub1Flag,
-  potisionalArguments: args,
+  positionalArguments: args,
   handler: (args, flags) => {
     console.log(args.arg1);
     console.log(flags.subflag1);
@@ -60,7 +60,7 @@ const command = makeCommand({
   version: "0.0.1",
   usage: "simple [OPTIONS] [COMMAND_NAME] [SUB COMMAND OPTIONS]",
   flag: flags,
-  potisionalArguments: commandNames,
+  positionalArguments: commandNames,
   handler: makeSubCommandHandler(
     { name: "sub1", command: subCommand1 },
     { name: "sub2", command: subCommand2 }
