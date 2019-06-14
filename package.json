@@ -1,6 +1,6 @@
 {
   "name": "marron-glace",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
   "license": "Apache-2.0",
