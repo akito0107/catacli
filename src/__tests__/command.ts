@@ -52,11 +52,11 @@ test("make command", done => {
       assert.deepEqual(args, {
         pos1: {
           value: "aaa",
-          position: 4
+          position: [4]
         },
         pos2: {
           value: "bbb",
-          position: 5
+          position: [5]
         }
       });
       done();
@@ -113,7 +113,7 @@ test("sub command", done => {
       assert.deepEqual(args, {
         sub1arg: {
           value: "test",
-          position: 6
+          position: [6]
         }
       });
       done();

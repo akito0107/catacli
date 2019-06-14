@@ -28,7 +28,7 @@ export type CommandSpec<
 export type Command = (
   args: string[],
   parentOpts?: {
-    currentPosition?: number;
+    commandNamePosition?: number;
     spec?: CommandSpec<any, any, any>;
   }
 ) => any;
@@ -62,7 +62,7 @@ export function makeCommand<
 
     const rest = args.map((a, idx) => {
       if (parentSpec) {
-        if (used.indexOf(idx) === -1 && idx > parentSpec.currentPosition) {
+        if (used.indexOf(idx) === -1 && idx > parentSpec.commandNamePosition) {
           return a;
         }
       } else {
@@ -117,7 +117,7 @@ export function makeSubCommandHandler(
     }
 
     command(rawArgs, {
-      currentPosition: subCommand.position,
+      commandNamePosition: subCommand.position[0],
       spec
     });
   };
