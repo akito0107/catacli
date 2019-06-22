@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 require("source-map-support").install();
 
 import {
