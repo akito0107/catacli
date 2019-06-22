@@ -1,7 +1,5 @@
 # marron-glace
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/akito0107/marron-glace.svg)](https://greenkeeper.io/)
-
 Super TypeScript-friendly commander helper.
 
 [![Build Status](https://dev.azure.com/akito01070362/marron-glace/_apis/build/status/akito0107.marron-glace?branchName=master)](https://dev.azure.com/akito01070362/marron-glace/_build/latest?definitionId=4&branchName=master)
