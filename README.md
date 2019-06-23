@@ -1,5 +1,7 @@
 # marron-glace
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/akito0107/marron-glace.svg)](https://greenkeeper.io/)
+
 Super TypeScript-friendly commander helper.
 
 ## install
