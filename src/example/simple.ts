@@ -6,7 +6,7 @@ import {
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag,
+  reduceFlag,
   makeStringArgument,
   makePositionalArguments
 } from "../main";
@@ -25,7 +25,7 @@ const stringFlag = makeStringFlag("opts3", {
 
 const stringArg = makeStringArgument("arg1");
 
-const flags = composeFlag(booleanFlag, numberFlag, stringFlag);
+const flags = reduceFlag(booleanFlag, numberFlag, stringFlag);
 const args = makePositionalArguments(stringArg);
 
 const command = makeCommand({

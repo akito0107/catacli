@@ -6,7 +6,7 @@ import {
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag,
+  reduceFlag,
   makeStringArgument,
   makePositionalArguments,
   makeSubCommandHandler,
@@ -25,8 +25,8 @@ const stringFlag = makeStringFlag("opts3", {
   usage: "string example"
 });
 
-const flags = composeFlag(booleanFlag, numberFlag, stringFlag);
-const sub1Flag = composeFlag(flags, makeStringFlag("subflag1"));
+const flags = reduceFlag(booleanFlag, numberFlag, stringFlag);
+const sub1Flag = reduceFlag(flags, makeStringFlag("subflag1"));
 
 const stringArg = makeStringArgument("arg1");
 const args = makePositionalArguments(stringArg);
@@ -47,7 +47,7 @@ const subCommand1 = makeCommand({
   }
 });
 
-const sub2Flag = composeFlag(flags, makeStringFlag("subflag2"));
+const sub2Flag = reduceFlag(flags, makeStringFlag("subflag2"));
 
 const subCommand2 = makeCommand({
   name: "sub2",

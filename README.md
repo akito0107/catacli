@@ -14,14 +14,16 @@ $ npm install marron-glace
 ## usage
 
 ### Simple Command
-Using `composeFlag`, `makePositionalArguments` and `makeCommand`, you can implements handler functions with typed args.
+
+Using `reduceFlag`, `makePositionalArguments` and `makeCommand`, you can implements handler functions with typed args.
+
 ```ts
 import {
   makeBooleanFlag,
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag,
+  reduceFlag,
   makeStringArgument,
   makePositionalArguments
 } from "marron-glace";
@@ -40,7 +42,7 @@ const stringFlag = makeStringFlag("opts3", {
 
 const stringArg = makeStringArgument("arg1");
 
-const flags = composeFlag(booleanFlag, numberFlag, stringFlag);
+const flags = reduceFlag(booleanFlag, numberFlag, stringFlag);
 const args = makePositionalArguments(stringArg);
 
 const command = makeCommand({
@@ -64,11 +66,13 @@ command(process.argv.splice(2));
 ```
 
 running with [ts-node](https://github.com/TypeStrong/ts-node)
+
 ```$xslt
 $ ts-node main.ts --opts1 --opts2 123 --opts3 test args
 ```
 
 and got these outputs.
+
 ```$xslt
 positionalArgs:  args
 flag opts1:  true
@@ -77,6 +81,7 @@ flag opts3:  test
 ```
 
 #### Short-hand flag
+
 `--opts3` is also acceptable with `-a` flag.
 
 ```$xslt
@@ -88,6 +93,7 @@ flag opts3:  test
 ```
 
 #### with Help
+
 You can show rich help texts with `--help` flag by default.
 
 ```$xslt
@@ -112,6 +118,7 @@ OPTIONS:
 ```
 
 ### SubCommands
+
 You can create subcommnds with `makeSubCommandHandler`.
 
 ```ts
@@ -120,7 +127,7 @@ import {
   makeNumberFlag,
   makeStringFlag,
   makeCommand,
-  composeFlag,
+  reduceFlag,
   makeStringArgument,
   makePositionalArguments,
   makeSubCommandHandler,
@@ -139,8 +146,8 @@ const stringFlag = makeStringFlag("opts3", {
   usage: "string example"
 });
 
-const flags = composeFlag(booleanFlag, numberFlag, stringFlag);
-const sub1Flag = composeFlag(flags, makeStringFlag("subflag1"));
+const flags = reduceFlag(booleanFlag, numberFlag, stringFlag);
+const sub1Flag = reduceFlag(flags, makeStringFlag("subflag1"));
 
 const stringArg = makeStringArgument("arg1");
 const args = makePositionalArguments(stringArg);
@@ -161,7 +168,7 @@ const subCommand1 = makeCommand({
   }
 });
 
-const sub2Flag = composeFlag(flags, makeStringFlag("subflag2"));
+const sub2Flag = reduceFlag(flags, makeStringFlag("subflag2"));
 
 const subCommand2 = makeCommand({
   name: "sub2",
@@ -185,7 +192,7 @@ const command = makeCommand({
   usage: "simple [OPTIONS] [COMMAND_NAME] [SUB COMMAND OPTIONS]",
   flag: flags,
   /* YOU MUST SPECIFY positionalArguments with `makeSubCommandNameArgument` */
-  positionalArguments: commandNames, /* YOU MUST SPECIFY positionalArguments with `makeSubCommandNameArgument` */
+  positionalArguments: commandNames /* YOU MUST SPECIFY positionalArguments with `makeSubCommandNameArgument` */,
   /* passing sub commands with commandName to `makeSubCommandHandler()` */
   handler: makeSubCommandHandler(
     { name: "sub1", command: subCommand1 },
@@ -197,6 +204,7 @@ command(process.argv.splice(2));
 ```
 
 running with [ts-node](https://github.com/TypeStrong/ts-node)
+
 ```
 $ ts-node main.ts  --opts1 --opts2 123 --opts3 test  sub1  --subflag1 test sub-positional-args
 arg1:  sub-positional-args
@@ -232,7 +240,6 @@ SUB OPTIONS:
 	--subflag1
 	--help  	 show help
 ```
-
 
 ## License
 

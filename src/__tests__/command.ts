@@ -7,14 +7,14 @@ import { makePositionalArguments, makeStringArgument } from "../args";
 import { strict as assert } from "assert";
 
 import {
-  composeFlag,
+  reduceFlag,
   makeBooleanFlag,
   makeNumberFlag,
   makeStringFlag
 } from "../flag";
 
 test("make command", done => {
-  const globalFlag = composeFlag(
+  const globalFlag = reduceFlag(
     makeStringFlag("arg1"),
     makeNumberFlag("arg2", {
       alias: "a2"
@@ -67,7 +67,7 @@ test("make command", done => {
 });
 
 test("sub command", done => {
-  const globalFlag = composeFlag(
+  const globalFlag = reduceFlag(
     makeStringFlag("arg1"),
     makeNumberFlag("arg2", {
       alias: "a2"
@@ -76,7 +76,7 @@ test("sub command", done => {
   const positionalArgs = makePositionalArguments(
     makeSubCommandNameArgument("sub1")
   );
-  const localFlag = composeFlag(globalFlag, makeBooleanFlag("sub1"));
+  const localFlag = reduceFlag(globalFlag, makeBooleanFlag("sub1"));
 
   const subArgs = makePositionalArguments(makeStringArgument("sub1arg"));
 

@@ -1,4 +1,4 @@
-import { composeFlag, makeBooleanFlag } from "./flag";
+import { reduceFlag, makeBooleanFlag } from "./flag";
 import { defaultHelp } from "./help";
 import { makeStringArgument } from "./args";
 
@@ -49,7 +49,7 @@ export function makeCommand<
 >(spec: CommandSpec<N, T, P>, showHelp = defaultHelp): Command {
   return (args: string[], parentSpec) => {
     const parser = showHelp
-      ? composeFlag(defaultHelpFlag, spec.flag)
+      ? reduceFlag(defaultHelpFlag, spec.flag)
       : spec.flag;
     const flags = parser(args);
 

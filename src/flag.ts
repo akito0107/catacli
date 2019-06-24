@@ -5,7 +5,7 @@ export type ParseResult<T, N extends string> = {
     value?: T;
     option: FlagOption<T>;
     position?: number[];
-  }
+  };
 };
 
 export type NumberFlag<N extends string> = Flag<number, N>;
@@ -101,7 +101,7 @@ export type UnionToIntersection<U> = (U extends any
   ? I
   : never;
 
-export function composeFlag<
+export function reduceFlag<
   T extends Array<(args: string[]) => { [key: string]: any }>
 >(...src: T): (args: string[]) => UnionToIntersection<TupleTypes<T>> {
   return <any>src.splice(1).reduce((acc, cur) => {
