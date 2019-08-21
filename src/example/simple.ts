@@ -30,7 +30,7 @@ const args = makePositionalArguments(stringArg);
 
 const command = makeCommand({
   name: "example",
-  description: "marron-glace is typescript-friendly commander tool",
+  description: "catacli is typescript-friendly commander tool",
   version: "0.0.1",
   usage: "simple [OPTIONS] arg1",
   flag: flags,

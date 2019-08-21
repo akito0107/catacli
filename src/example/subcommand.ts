@@ -33,7 +33,7 @@ const args = makePositionalArguments(stringArg);
 
 const subCommand1 = makeCommand({
   name: "sub1",
-  description: "marron-glace subcommand example (sub1)",
+  description: "catacli subcommand example (sub1)",
   version: "0.0.1",
   usage: "example [OPTIONS] sub1 [SUB COMMAND OPTIONS]",
   flag: sub1Flag,
@@ -51,7 +51,7 @@ const sub2Flag = reduceFlag(flags, makeStringFlag("subflag2"));
 
 const subCommand2 = makeCommand({
   name: "sub2",
-  description: "marron-glace subcommand example (sub2)",
+  description: "catacli subcommand example (sub2)",
   version: "0.0.1",
   usage: "example [OPTIONS] sub2 [SUB COMMAND OPTIONS]",
   flag: sub2Flag,
@@ -66,7 +66,7 @@ const commandNames = makePositionalArguments(
 
 const command = makeCommand({
   name: "example",
-  description: "marron-glace is typescript-friendly commander tool",
+  description: "catacli is typescript-friendly commander tool",
   version: "0.0.1",
   usage: "simple [OPTIONS] [COMMAND_NAME] [SUB COMMAND OPTIONS]",
   flag: flags,

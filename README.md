@@ -1,14 +1,14 @@
-# marron-glace
+# catacli
 
 Super TypeScript-friendly commander helper.
 
-[![Build Status](https://dev.azure.com/akito01070362/marron-glace/_apis/build/status/akito0107.marron-glace?branchName=master)](https://dev.azure.com/akito01070362/marron-glace/_build/latest?definitionId=4&branchName=master)
-[![npm version](https://badge.fury.io/js/marron-glace.svg)](https://badge.fury.io/js/marron-glace) [![Greenkeeper badge](https://badges.greenkeeper.io/akito0107/marron-glace.svg)](https://greenkeeper.io/)
+[![Build Status](https://dev.azure.com/akito01070362/catacli/_apis/build/status/akito0107.catacli?branchName=master)](https://dev.azure.com/akito01070362/catacli/_build/latest?definitionId=4&branchName=master)
+[![npm version](https://badge.fury.io/js/catacli.svg)](https://badge.fury.io/js/catacli) [![Greenkeeper badge](https://badges.greenkeeper.io/akito0107/catacli.svg)](https://greenkeeper.io/)
 
 ## install
 
 ```$xslt
-$ npm install marron-glace
+$ npm install catacli
 ```
 
 ## usage
@@ -26,7 +26,7 @@ import {
   reduceFlag,
   makeStringArgument,
   makePositionalArguments
-} from "marron-glace";
+} from "catacli";
 
 const booleanFlag = makeBooleanFlag("opts1", {
   usage: "boolean example"
@@ -47,7 +47,7 @@ const args = makePositionalArguments(stringArg);
 
 const command = makeCommand({
   name: "example",
-  description: "marron-glace is typescript-friendly commander tool",
+  description: "catacli is typescript-friendly commander tool",
   version: "0.0.1",
   usage: "simple [OPTIONS] arg1",
   flag: flags,
@@ -99,7 +99,7 @@ You can show rich help texts with `--help` flag by default.
 ```$xslt
 $ ts-node main.ts --opts1 -a test --opts3 123 args --help
 NAME:
-   example - marron-glace is typescript-friendly commander tool
+   example - catacli is typescript-friendly commander tool
 
 USAGE:
    simple [OPTIONS] arg1
@@ -132,7 +132,7 @@ import {
   makePositionalArguments,
   makeSubCommandHandler,
   makeSubCommandNameArgument
-} from "marron-glace";
+} from "catacli";
 
 const booleanFlag = makeBooleanFlag("opts1", {
   usage: "boolean example"
@@ -154,7 +154,7 @@ const args = makePositionalArguments(stringArg);
 
 const subCommand1 = makeCommand({
   name: "sub1",
-  description: "marron-glace subcommand example (sub1)",
+  description: "catacli subcommand example (sub1)",
   version: "0.0.1",
   usage: "example [OPTIONS] sub1 [SUB COMMAND OPTIONS]",
   flag: sub1Flag,
@@ -172,7 +172,7 @@ const sub2Flag = reduceFlag(flags, makeStringFlag("subflag2"));
 
 const subCommand2 = makeCommand({
   name: "sub2",
-  description: "marron-glace subcommand example (sub2)",
+  description: "catacli subcommand example (sub2)",
   version: "0.0.1",
   usage: "example [OPTIONS] sub2 [SUB COMMAND OPTIONS]",
   flag: sub2Flag,
@@ -187,7 +187,7 @@ const commandNames = makePositionalArguments(
 
 const command = makeCommand({
   name: "example",
-  description: "marron-glace is typescript-friendly commander tool",
+  description: "catacli is typescript-friendly commander tool",
   version: "0.0.1",
   usage: "simple [OPTIONS] [COMMAND_NAME] [SUB COMMAND OPTIONS]",
   flag: flags,
@@ -220,7 +220,7 @@ and also shows rich help texts with `--help`.
 % ts-node main.ts  --opts1 --opts2 123 --opts3 test  sub1  --subflag1 test sub-positional-args --help
 
 NAME:
-   example sub1 - marron-glace subcommand example (sub1)
+   example sub1 - catacli subcommand example (sub1)
 
 USAGE:
    example [OPTIONS] sub1 [SUB COMMAND OPTIONS]

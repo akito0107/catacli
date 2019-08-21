@@ -1,10 +1,10 @@
 {
-  "name": "marron-glace",
+  "name": "catacli",
   "version": "0.0.3",
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
   "license": "Apache-2.0",
-  "repository": "akito0107/marron-glace",
+  "repository": "akito0107/catacli",
   "author": {
     "name": "Akito Ito",
     "email": "akito0107@gmail.com"
