@@ -6,12 +6,17 @@ on:
       - master
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        de_version: [10, 12]
     
     steps:
     - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
     - name: yarn install and build 
       run: |
         yarn install
