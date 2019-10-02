@@ -1,6 +1,6 @@
 {
   "name": "catacli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
   "license": "Apache-2.0",
