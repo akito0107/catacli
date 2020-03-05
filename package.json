@@ -28,7 +28,7 @@
     "prettier": "1.18.2",
     "rimraf": "2.7.1",
     "ts-jest": "24.0.2",
-    "ts-node": "8.3.0",
+    "ts-node": "8.6.2",
     "typescript": "3.5.3"
   },
   "jest": {
