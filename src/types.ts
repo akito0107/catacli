@@ -1,8 +1,7 @@
-
 export type Opts<T> = {
-  [key in string]: {
-    value: T;
+  [k: string]: {
+    value?: T;
     option: any;
-    position: number | number[];
-  }
+    position?: number | number[];
+  };
 };
