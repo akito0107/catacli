@@ -1,10 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES6",
     "module": "commonjs",
     "declaration": true,
-    "jsx": "preserve",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
@@ -14,18 +13,11 @@
     "inlineSourceMap": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["ESNext", "ES2019"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "outDir": "lib"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/__tests__/**"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "src/**/__tests__/**"]
 }

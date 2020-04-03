@@ -44,13 +44,13 @@ export const makeSubCommandNameArgument = (...names: string[]) =>
 
 export function makeCommand<
   N extends string,
-  T extends (args: string[]) => any,
+  F extends (args: string[]) => { [key in string]: any },
   P extends (args: string[]) => any
->(spec: CommandSpec<N, T, P>, showHelp = defaultHelp): Command {
+>(spec: CommandSpec<N, F, P>, showHelp = defaultHelp): Command {
   return (args: string[], parentSpec) => {
-    const parser = showHelp
+    const parser = spec.flag
       ? reduceFlag(defaultHelpFlag, spec.flag)
-      : spec.flag;
+      : defaultHelpFlag;
     const flags = parser(args);
 
     const used = Object.keys(flags)
@@ -71,6 +71,10 @@ export function makeCommand<
         }
       }
     });
+
+    // flags are inferred as unknown.
+    // we must improve type definition of `F` but now, there are no solution.
+    // @ts-expect-error
     const helpFn = (message = "") =>
       showHelp(spec, positionalArguments, flags, message, parentSpec);
 
@@ -91,6 +95,7 @@ export function makeCommand<
       ? positionalArguments["COMMAND_NAME"].position
       : Number.MAX_SAFE_INTEGER;
 
+    // @ts-expect-error
     if (flags.help && flags.help.value && nameIdx > flags.help.position[0]) {
       helpFn();
       return;

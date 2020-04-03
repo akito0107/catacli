@@ -14,7 +14,7 @@ import {
 } from "../flag";
 
 // FIXME failed only Github Actions
-test.skip("make command", done => {
+test("make command", done => {
   const globalFlag = reduceFlag(
     makeStringFlag("arg1"),
     makeNumberFlag("arg2", {
@@ -68,7 +68,7 @@ test.skip("make command", done => {
 });
 
 // FIXME failed only Github Actions
-test.skip("sub command", done => {
+test("sub command", done => {
   const globalFlag = reduceFlag(
     makeStringFlag("arg1"),
     makeNumberFlag("arg2", {
@@ -129,4 +129,38 @@ test.skip("sub command", done => {
   });
 
   command(["--arg1", "test", "-a2", "123", "sub1", "--sub1", "test"]);
+});
+
+test("no flags", done => {
+  const positionalArgs = makePositionalArguments(
+    makeStringArgument("pos1"),
+    makeStringArgument("pos2")
+  );
+  const command = makeCommand({
+    name: "test",
+    positionalArguments: positionalArgs,
+    handler: (args, flags) => {
+      assert.deepEqual(flags, {
+        help: {
+          option: {
+            usage: "show help"
+          },
+          value: undefined
+        }
+      });
+      assert.deepEqual(args, {
+        pos1: {
+          value: "aaa",
+          position: [0]
+        },
+        pos2: {
+          value: "bbb",
+          position: [1]
+        }
+      });
+      done();
+    }
+  });
+
+  command(["aaa", "bbb"]);
 });
