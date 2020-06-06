@@ -36,7 +36,7 @@ const numberFlag = makeNumberFlag("opts2", {
   usage: "number example"
 });
 const stringFlag = makeStringFlag("opts3", {
-  alias: "a", // you can specify alias (shot-hand flag)
+  alias: "a", // you can specify alias (short-hand flag)
   usage: "string example"
 });
 
